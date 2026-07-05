@@ -1,0 +1,31 @@
+name: Windows EXE Derle
+
+# Elle "Run workflow" ile veya her push'ta çalışır
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: windows-latest   # GitHub'ın Windows sunucusu
+    steps:
+      - name: Kodu al
+        uses: actions/checkout@v4
+
+      - name: Python kur
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Paketleri kur
+        run: pip install pyinstaller pdfplumber openpyxl
+
+      - name: EXE oluştur
+        run: pyinstaller --onefile --windowed --name "Liebherr_PO_Excel" liebherr_po_gui.py
+
+      - name: EXE'yi yükle (artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Liebherr_PO_Excel-windows
+          path: dist/Liebherr_PO_Excel.exe
